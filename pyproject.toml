@@ -3,6 +3,10 @@ name = "tiny_stories_rl"
 version = "0.1.0"
 description = "Add your description here"
 dependencies = [
+    "beartype>=0.19.0",
+    "torch==2.4.0",
+    "tqdm>=4.66.5",
+    "transformers>=4.45.1",
 ]
 readme = "README.md"
 requires-python = ">= 3.9"
