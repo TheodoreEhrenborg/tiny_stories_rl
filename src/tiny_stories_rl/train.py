@@ -40,15 +40,12 @@ def main():
     optimizer = SGD(lr=0.001, maximize=True)
     optimizer.zero_grad()
     input_tokens = torch.tensor(tokenizer("Once upon a time")["input_ids"]).unsqueeze(0)
-    print(input_tokens.shape)
     output_tokens = generate(llm, input_tokens)
-    print(output_tokens.shape)
     output_text = tokenizer.decode(output_tokens[0])
     reward = get_reward(output_text)
     loss = llm(input_ids=output_tokens, labels=output_tokens).loss
     (loss * reward).backward()
     optimizer.step()
-    print(loss)
 
 
 @beartype
