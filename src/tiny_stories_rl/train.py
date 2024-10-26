@@ -37,7 +37,7 @@ def setup(cuda: bool) -> tuple[GPTNeoForCausalLM, GPT2TokenizerFast]:
 
 def main():
     llm, tokenizer = setup(False)
-    optimizer = SGD(lr=0.001, maximize=True)
+    optimizer = SGD(llm.parameters(), lr=0.001, maximize=True)
     optimizer.zero_grad()
     input_tokens = torch.tensor(tokenizer("Once upon a time")["input_ids"]).unsqueeze(0)
     output_tokens = generate(llm, input_tokens)
@@ -49,7 +49,7 @@ def main():
 
 
 @beartype
-def get_reward(text: str) -> float:
+def get_reward(text: str) -> int:
     return len([word for word in text.split() if word[0].lower() == "a"])
 
 
