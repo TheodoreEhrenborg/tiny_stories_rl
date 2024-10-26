@@ -43,6 +43,9 @@ def main():
     output_tokens = generate(llm, input_tokens)
     output_text = tokenizer.decode(output_tokens[0])
     reward = get_reward(output_text)
+    print(output_text)
+    print(reward)
+    print()
     loss = llm(input_ids=output_tokens, labels=output_tokens).loss
     (loss * reward).backward()
     optimizer.step()
