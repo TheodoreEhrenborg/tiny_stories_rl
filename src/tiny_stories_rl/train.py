@@ -15,12 +15,13 @@ from transformers import (
 def generate(
     llm: GPTNeoForCausalLM, prompt_tokens: Int[torch.Tensor, "1 input_seq_len"]
 ) -> Int[torch.Tensor, "1 output_seq_len"]:
-    return llm.generate(
-        prompt_tokens,
-        max_length=1000,
-        num_beams=1,
-        generation_config=GenerationConfig(do_sample=True, temperature=1.0),
-    )
+    with torch.no_grad():
+        return llm.generate(
+            prompt_tokens,
+            max_length=100,
+            num_beams=1,
+            generation_config=GenerationConfig(do_sample=True, temperature=1.0),
+        )
 
 
 @beartype
@@ -31,3 +32,18 @@ def setup(cuda: bool) -> tuple[GPTNeoForCausalLM, GPT2TokenizerFast]:
     tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-125M")
     tokenizer.pad_token = tokenizer.eos_token
     return llm, tokenizer
+
+
+def main():
+    llm, tokenizer = setup(False)
+    input_tokens = torch.tensor(tokenizer("Once upon a time")["input_ids"]).unsqueeze(0)
+    print(input_tokens.shape)
+    output_tokens = generate(llm, input_tokens)
+    print(output_tokens.shape)
+    entire_sequence = torch.cat((input_tokens, output_tokens), dim=1)
+    foo = llm(input_ids=entire_sequence, labels=entire_sequence)
+    print(foo)
+
+
+if __name__ == "__main__":
+    main()
