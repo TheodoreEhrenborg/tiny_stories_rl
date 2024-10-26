@@ -11,6 +11,8 @@ from transformers import (
     GPTNeoForCausalLM,
 )
 
+# TODO Can I silence the attention error by passing the attention mask around?
+
 
 @jaxtyped(typechecker=beartype)
 def generate(
