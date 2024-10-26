@@ -38,17 +38,20 @@ def setup(cuda: bool) -> tuple[GPTNeoForCausalLM, GPT2TokenizerFast]:
 def main():
     llm, tokenizer = setup(False)
     optimizer = SGD(llm.parameters(), lr=0.001, maximize=True)
-    optimizer.zero_grad()
-    input_tokens = torch.tensor(tokenizer("Once upon a time")["input_ids"]).unsqueeze(0)
-    output_tokens = generate(llm, input_tokens)
-    output_text = tokenizer.decode(output_tokens[0])
-    reward = get_reward(output_text)
-    print(output_text)
-    print(reward)
-    print()
-    loss = llm(input_ids=output_tokens, labels=output_tokens).loss
-    (loss * reward).backward()
-    optimizer.step()
+    while True:
+        optimizer.zero_grad()
+        input_tokens = torch.tensor(
+            tokenizer("Once upon a time")["input_ids"]
+        ).unsqueeze(0)
+        output_tokens = generate(llm, input_tokens)
+        output_text = tokenizer.decode(output_tokens[0])
+        reward = get_reward(output_text)
+        print(output_text)
+        print(reward)
+        print()
+        loss = llm(input_ids=output_tokens, labels=output_tokens).loss
+        (loss * reward).backward()
+        optimizer.step()
 
 
 @beartype
