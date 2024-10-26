@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import torch
 from beartype import beartype
+from torch.optim import SGD
 from jaxtyping import Int, jaxtyped
 from transformers import (
     AutoModelForCausalLM,
@@ -36,13 +37,23 @@ def setup(cuda: bool) -> tuple[GPTNeoForCausalLM, GPT2TokenizerFast]:
 
 def main():
     llm, tokenizer = setup(False)
+    optimizer = SGD(lr=0.001, maximize=True)
+    optimizer.zero_grad()
     input_tokens = torch.tensor(tokenizer("Once upon a time")["input_ids"]).unsqueeze(0)
     print(input_tokens.shape)
     output_tokens = generate(llm, input_tokens)
     print(output_tokens.shape)
-    entire_sequence = torch.cat((input_tokens, output_tokens), dim=1)
-    foo = llm(input_ids=entire_sequence, labels=entire_sequence)
-    print(foo)
+    output_text = tokenizer.decode(output_tokens[0])
+    reward = get_reward(output_text)
+    loss = llm(input_ids=output_tokens, labels=output_tokens).loss
+    (loss * reward).backward()
+    optimizer.step()
+    print(loss)
+
+
+@beartype
+def get_reward(text: str) -> float:
+    return len([word for word in text.split() if word[0].lower() == "a"])
 
 
 if __name__ == "__main__":
