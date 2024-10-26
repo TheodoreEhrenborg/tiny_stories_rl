@@ -38,7 +38,7 @@ def setup(cuda: bool) -> tuple[GPTNeoForCausalLM, GPT2TokenizerFast]:
 
 
 def main():
-    llm, tokenizer = setup(False)
+    llm, tokenizer = setup(True)
     # To increase the probability of a sequence, we take
     # a step to minimize the loss, since loss measures how far we're missing perfect prediction.
     # To decrease the probability, first multiply by a negative
@@ -46,9 +46,9 @@ def main():
     optimizer = SGD(llm.parameters(), lr=0.001)
     while True:
         optimizer.zero_grad()
-        input_tokens = torch.tensor(
-            tokenizer("Once upon a time")["input_ids"]
-        ).unsqueeze(0)
+        input_tokens = (
+            torch.tensor(tokenizer("Once upon a time")["input_ids"]).unsqueeze(0).cuda()
+        )
         output_tokens = generate(llm, input_tokens)
         output_text = tokenizer.decode(output_tokens[0])
         reward = get_reward(output_text)
