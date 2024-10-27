@@ -65,6 +65,7 @@ def main():
             output_text = tokenizer.decode(output_tokens[0])
             reward = get_reward(output_text)
             writer.add_scalar("Reward", reward, step)
+            writer.add_text("Generation", output_text, step)
             print(output_text)
             print(f"has reward {reward}")
             sequences.append(output_tokens)
