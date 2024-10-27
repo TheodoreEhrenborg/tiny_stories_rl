@@ -94,7 +94,7 @@ def main(user_args: Namespace):
             with torch.no_grad():
                 unmodified_llm_logits = unmodified_llm(
                     input_ids=these_tokens, labels=these_tokens
-                )
+                ).logits
             kl_loss = kl_loss_fn(llm_logits, unmodified_llm_logits)
             writer.add_scalar("Unscaled KL loss", kl_loss, step)
             loss = scaled_cross_entropy_loss + kl_loss * user_args.kl_coefficient
