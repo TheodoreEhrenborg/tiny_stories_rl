@@ -44,7 +44,8 @@ def test_kl_loss():
     text2 = torch.tensor([[6, 7, 8, 9, 10]])
     logits1 = llm(input_ids=text1, labels=text1).logits
     logits2 = llm(input_ids=text2, labels=text2).logits
-    torch_kl_loss = kl_loss_fn(logits1, logits2)
-    ref_kl_loss = reference_kl_loss(logits1, logits2)
+    norm = torch.nn.LogSoftmax(dim=2)
+    torch_kl_loss = kl_loss_fn(norm(logits1), norm(logits2))
+    ref_kl_loss = reference_kl_loss(norm(logits1), norm(logits2))
     assert ref_kl_loss.shape == torch.Size([])
     assert torch.allclose(torch_kl_loss, ref_kl_loss)
