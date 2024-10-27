@@ -85,7 +85,9 @@ def main():
 def get_reward(text: str) -> int:
     words = text.split()
     return sum(
-        1 for word, next_word in zip(words, words[1:]) if word[0] == next_word[0]
+        1
+        for word, next_word in zip(words, words[1:])
+        if word[0].lower() == next_word[0].lower()
     )
 
 

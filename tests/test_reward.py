@@ -13,3 +13,4 @@ def test_reward():
     assert get_reward("goose goose duck duck") == 2
     assert get_reward("goose gopher giraffe duck") == 2
     assert get_reward("goose gopher giraffe gorilla") == 3
+    assert get_reward("Goose gopher Giraffe gorilla") == 3
