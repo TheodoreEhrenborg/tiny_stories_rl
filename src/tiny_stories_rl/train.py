@@ -60,6 +60,7 @@ def main(user_args: Namespace):
     optimizer = SGD(llm.parameters(), lr=0.0001)
     step = 0
     kl_loss_fn = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
+    writer.add_scalar("KL coefficent", user_args.kl_coefficient, step)
     while True:
         optimizer.zero_grad()
         sequences = []
