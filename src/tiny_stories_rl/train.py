@@ -18,12 +18,9 @@ from transformers import (
 
 
 @jaxtyped(typechecker=beartype)
-def generate(
-    llm: GPTNeoForCausalLM, prompt_tokens: Int[torch.Tensor, "1 input_seq_len"]
-) -> Int[torch.Tensor, "1 output_seq_len"]:
+def generate(llm: GPTNeoForCausalLM) -> Int[torch.Tensor, "1 output_seq_len"]:
     with torch.no_grad():
         return llm.generate(
-            prompt_tokens,
             max_length=100,
             num_beams=1,
             generation_config=GenerationConfig(do_sample=True, temperature=1.0),
@@ -52,16 +49,13 @@ def main():
     # reward---minimizing the product will have the effect of maximizing the loss
     optimizer = SGD(llm.parameters(), lr=0.0001)
     step = 0
-    input_tokens = (
-        torch.tensor(tokenizer("Once upon a time")["input_ids"]).unsqueeze(0).cuda()
-    )
     while True:
         optimizer.zero_grad()
         sequences = []
         rewards = []
         print("Starting group")
         for _ in range(rloo_group):
-            output_tokens = generate(llm, input_tokens)
+            output_tokens = generate(llm)
             output_text = tokenizer.decode(output_tokens[0])
             reward = get_reward(output_text)
             writer.add_scalar("Reward", reward, step)
