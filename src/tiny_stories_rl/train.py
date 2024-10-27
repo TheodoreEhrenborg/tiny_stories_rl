@@ -21,7 +21,8 @@ from transformers import (
 @beartype
 def make_parser() -> ArgumentParser:
     parser = ArgumentParser()
-    parser.add_argument("--kl_coefficient", type=float, default=0.0)
+    parser.add_argument("--kl-coefficient", type=float, default=0.0)
+    parser.add_argument("--max-generations", type=int, default=2000)
     return parser
 
 
@@ -62,7 +63,7 @@ def main(user_args: Namespace):
     kl_loss_fn = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
     writer.add_scalar("KL coefficent", user_args.kl_coefficient, step)
     norm = torch.nn.LogSoftmax(dim=2)
-    while True:
+    while step <= user_args.max_generations:
         optimizer.zero_grad()
         sequences = []
         rewards = []
@@ -102,6 +103,7 @@ def main(user_args: Namespace):
             loss.backward()
         optimizer.step()
         step += rloo_group
+    writer.close()
 
 
 @beartype
