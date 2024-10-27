@@ -50,11 +50,11 @@ def main():
     # reward---minimizing the product will have the effect of maximizing the loss
     optimizer = SGD(llm.parameters(), lr=0.0001)
     step = 0
+    input_tokens = (
+        torch.tensor(tokenizer("Once upon a time")["input_ids"]).unsqueeze(0).cuda()
+    )
     while True:
         optimizer.zero_grad()
-        input_tokens = (
-            torch.tensor(tokenizer("Once upon a time")["input_ids"]).unsqueeze(0).cuda()
-        )
         output_tokens = generate(llm, input_tokens)
         output_text = tokenizer.decode(output_tokens[0])
         reward = get_reward(output_text)
