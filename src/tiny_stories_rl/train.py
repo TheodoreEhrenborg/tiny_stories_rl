@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import torch
+import copy
 from beartype import beartype
 from torch.optim import SGD
 from torch.utils.tensorboard import SummaryWriter
@@ -44,6 +45,7 @@ def main():
     print(f"Writing to {output_dir}")
     writer = SummaryWriter(output_dir)
     llm, tokenizer = setup(True)
+    rloo_group = 10
     # To increase the probability of a sequence, we take
     # a step to minimize the loss, since loss measures how far we're missing perfect prediction.
     # To decrease the probability, first multiply by a negative
@@ -55,15 +57,27 @@ def main():
     )
     while True:
         optimizer.zero_grad()
-        output_tokens = generate(llm, input_tokens)
-        output_text = tokenizer.decode(output_tokens[0])
-        reward = get_reward(output_text)
-        writer.add_scalar("Reward", reward, step)
-        print(output_text)
-        loss = llm(input_ids=output_tokens, labels=output_tokens).loss
-        (loss * reward).backward()
+        sequences = []
+        rewards = []
+        print("Starting ")
+        for _ in range(rloo_group):
+            output_tokens = generate(llm, input_tokens)
+            output_text = tokenizer.decode(output_tokens[0])
+            reward = get_reward(output_text)
+            writer.add_scalar("Reward", reward, step)
+            print(output_text)
+            print(f"has reward {reward}")
+            sequences.append(output_tokens)
+            rewards.append(reward)
+            step += 1
+        for i in range(rloo_group):
+            other_rewards = copy.deepcopy(rewards)
+            this_reward = other_rewards.pop(i)
+            mean_other_rewards = sum(other_rewards) / len(other_rewards)
+            these_tokens = sequences[i]
+            loss = llm(input_ids=these_tokens, labels=these_tokens).loss
+            (loss * (this_reward - mean_other_rewards)).backward()
         optimizer.step()
-        step += 1
 
 
 @beartype
