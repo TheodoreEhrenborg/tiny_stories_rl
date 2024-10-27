@@ -42,6 +42,7 @@ def main():
     print(f"Writing to {output_dir}")
     writer = SummaryWriter(output_dir)
     llm, tokenizer = setup(True)
+    unmodified_llm, _ = setup(True)
     rloo_group = 10
     # To increase the probability of a sequence, we take
     # a step to minimize the loss, since loss measures how far we're missing perfect prediction.
@@ -70,8 +71,14 @@ def main():
             this_reward = other_rewards.pop(i)
             mean_other_rewards = sum(other_rewards) / len(other_rewards)
             these_tokens = sequences[i]
-            loss = llm(input_ids=these_tokens, labels=these_tokens).loss
-            (loss * (this_reward - mean_other_rewards)).backward()
+            cross_entropy_loss = llm(input_ids=these_tokens, labels=these_tokens).loss
+            scaled_cross_entropy_loss = cross_entropy_loss * (
+                this_reward - mean_other_rewards
+            )
+            kl_loss = 0
+            kl_coeff = 0
+            loss = scaled_cross_entropy_loss + kl_loss * kl_coeff
+            loss.backward()
         optimizer.step()
 
 
