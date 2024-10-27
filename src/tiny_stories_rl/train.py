@@ -61,6 +61,7 @@ def main(user_args: Namespace):
     step = 0
     kl_loss_fn = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
     writer.add_scalar("KL coefficent", user_args.kl_coefficient, step)
+    norm = torch.nn.LogSoftmax(dim=2)
     while True:
         optimizer.zero_grad()
         sequences = []
@@ -95,7 +96,7 @@ def main(user_args: Namespace):
                 unmodified_llm_logits = unmodified_llm(
                     input_ids=these_tokens, labels=these_tokens
                 ).logits
-            kl_loss = kl_loss_fn(llm_logits, unmodified_llm_logits)
+            kl_loss = kl_loss_fn(norm(llm_logits), norm(unmodified_llm_logits))
             writer.add_scalar("Unscaled KL loss", kl_loss, step + i)
             loss = scaled_cross_entropy_loss + kl_loss * user_args.kl_coefficient
             loss.backward()
