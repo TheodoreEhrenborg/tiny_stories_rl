@@ -2,6 +2,7 @@
 import torch
 import copy
 from beartype import beartype
+from argparse import ArgumentParser, Namespace
 from torch.optim import SGD
 from torch.utils.tensorboard import SummaryWriter
 from coolname import generate_slug
@@ -15,6 +16,13 @@ from transformers import (
 )
 
 # TODO Can I silence the attention error by passing the attention mask around?
+
+
+@beartype
+def make_parser() -> ArgumentParser:
+    parser = ArgumentParser()
+    parser.add_argument("--kl_coefficient", type=float, default=0.0)
+    return parser
 
 
 @jaxtyped(typechecker=beartype)
@@ -37,7 +45,8 @@ def setup(cuda: bool) -> tuple[GPTNeoForCausalLM, GPT2TokenizerFast]:
     return llm, tokenizer
 
 
-def main():
+@beartype
+def main(user_args: Namespace):
     output_dir = f"/results/{generate_slug()}"
     print(f"Writing to {output_dir}")
     writer = SummaryWriter(output_dir)
@@ -76,8 +85,7 @@ def main():
                 this_reward - mean_other_rewards
             )
             kl_loss = 0
-            kl_coeff = 0
-            loss = scaled_cross_entropy_loss + kl_loss * kl_coeff
+            loss = scaled_cross_entropy_loss + kl_loss * user_args.kl_coefficient
             loss.backward()
         optimizer.step()
 
@@ -93,4 +101,4 @@ def get_reward(text: str) -> int:
 
 
 if __name__ == "__main__":
-    main()
+    main(make_parser().parse_args())
