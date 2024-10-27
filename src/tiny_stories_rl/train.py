@@ -59,6 +59,7 @@ def main(user_args: Namespace):
     # reward---minimizing the product will have the effect of maximizing the loss
     optimizer = SGD(llm.parameters(), lr=0.0001)
     step = 0
+    kl_loss_fn = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
     while True:
         optimizer.zero_grad()
         sequences = []
@@ -80,11 +81,22 @@ def main(user_args: Namespace):
             this_reward = other_rewards.pop(i)
             mean_other_rewards = sum(other_rewards) / len(other_rewards)
             these_tokens = sequences[i]
-            cross_entropy_loss = llm(input_ids=these_tokens, labels=these_tokens).loss
+            llm_output = llm(input_ids=these_tokens, labels=these_tokens)
+            cross_entropy_loss = llm_output.loss
+            writer.add_scalar("Cross entropy loss", cross_entropy_loss, step)
             scaled_cross_entropy_loss = cross_entropy_loss * (
                 this_reward - mean_other_rewards
             )
-            kl_loss = 0
+            writer.add_scalar(
+                "Scaled cross entropy loss", scaled_cross_entropy_loss, step
+            )
+            llm_logits = llm_output.logits
+            with torch.no_grad():
+                unmodified_llm_logits = unmodified_llm(
+                    input_ids=these_tokens, labels=these_tokens
+                )
+            kl_loss = kl_loss_fn(llm_logits, unmodified_llm_logits)
+            writer.add_scalar("Unscaled KL loss", kl_loss, step)
             loss = scaled_cross_entropy_loss + kl_loss * user_args.kl_coefficient
             loss.backward()
         optimizer.step()
