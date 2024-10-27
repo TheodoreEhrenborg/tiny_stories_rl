@@ -83,7 +83,10 @@ def main():
 
 @beartype
 def get_reward(text: str) -> int:
-    return len([word for word in text.split() if word[0].lower() == "a"])
+    words = text.split()
+    return sum(
+        1 for word, next_word in zip(words, words[1:]) if word[0] == next_word[0]
+    )
 
 
 if __name__ == "__main__":
