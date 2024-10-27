@@ -59,7 +59,7 @@ def main():
         optimizer.zero_grad()
         sequences = []
         rewards = []
-        print("Starting ")
+        print("Starting group")
         for _ in range(rloo_group):
             output_tokens = generate(llm, input_tokens)
             output_text = tokenizer.decode(output_tokens[0])
