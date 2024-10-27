@@ -66,17 +66,16 @@ def main(user_args: Namespace):
         sequences = []
         rewards = []
         print("Starting group")
-        for _ in range(rloo_group):
+        for i in range(rloo_group):
             output_tokens = generate(llm)
             output_text = tokenizer.decode(output_tokens[0])
             reward = get_reward(output_text)
-            writer.add_scalar("Reward", reward, step)
-            writer.add_text("Generation", output_text, step)
+            writer.add_scalar("Reward", reward, step + i)
+            writer.add_text("Generation", output_text, step + i)
             print(output_text)
             print(f"has reward {reward}")
             sequences.append(output_tokens)
             rewards.append(reward)
-            step += 1
         for i in range(rloo_group):
             other_rewards = copy.deepcopy(rewards)
             this_reward = other_rewards.pop(i)
@@ -84,12 +83,12 @@ def main(user_args: Namespace):
             these_tokens = sequences[i]
             llm_output = llm(input_ids=these_tokens, labels=these_tokens)
             cross_entropy_loss = llm_output.loss
-            writer.add_scalar("Cross entropy loss", cross_entropy_loss, step)
+            writer.add_scalar("Cross entropy loss", cross_entropy_loss, step + i)
             scaled_cross_entropy_loss = cross_entropy_loss * (
                 this_reward - mean_other_rewards
             )
             writer.add_scalar(
-                "Scaled cross entropy loss", scaled_cross_entropy_loss, step
+                "Scaled cross entropy loss", scaled_cross_entropy_loss, step + i
             )
             llm_logits = llm_output.logits
             with torch.no_grad():
@@ -97,10 +96,11 @@ def main(user_args: Namespace):
                     input_ids=these_tokens, labels=these_tokens
                 ).logits
             kl_loss = kl_loss_fn(llm_logits, unmodified_llm_logits)
-            writer.add_scalar("Unscaled KL loss", kl_loss, step)
+            writer.add_scalar("Unscaled KL loss", kl_loss, step + i)
             loss = scaled_cross_entropy_loss + kl_loss * user_args.kl_coefficient
             loss.backward()
         optimizer.step()
+        step += rloo_group
 
 
 @beartype
