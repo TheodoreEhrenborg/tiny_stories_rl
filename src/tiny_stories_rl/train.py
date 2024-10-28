@@ -60,9 +60,7 @@ def main(user_args: Namespace):
     # reward---minimizing the product will have the effect of maximizing the loss
     optimizer = SGD(llm.parameters(), lr=0.0001)
     step = 0
-    kl_loss_fn = torch.nn.KLDivLoss(reduction="batchmean", log_target=True)
     writer.add_scalar("KL coefficent", user_args.kl_coefficient, step)
-    norm = torch.nn.LogSoftmax(dim=2)
     while step <= user_args.max_generations:
         optimizer.zero_grad()
         sequences = []
@@ -86,20 +84,18 @@ def main(user_args: Namespace):
             llm_output = llm(input_ids=these_tokens, labels=these_tokens)
             cross_entropy_loss = llm_output.loss
             writer.add_scalar("Cross entropy loss", cross_entropy_loss, step + i)
-            scaled_cross_entropy_loss = cross_entropy_loss * (
-                this_reward - mean_other_rewards
-            )
-            writer.add_scalar(
-                "Scaled cross entropy loss", scaled_cross_entropy_loss, step + i
-            )
-            llm_logits = llm_output.logits
+            normalized_reward = this_reward - mean_other_rewards
+            writer.add_scalar("Normalized reward", normalized_reward, step + i)
             with torch.no_grad():
-                unmodified_llm_logits = unmodified_llm(
+                unmodified_llm_pi = unmodified_llm(
                     input_ids=these_tokens, labels=these_tokens
-                ).logits
-            kl_loss = kl_loss_fn(norm(llm_logits), norm(unmodified_llm_logits))
-            writer.add_scalar("Unscaled KL loss", kl_loss, step + i)
-            loss = scaled_cross_entropy_loss + kl_loss * user_args.kl_coefficient
+                ).loss
+            kl_loss_term = unmodified_llm_pi - cross_entropy_loss
+            writer.add_scalar("Unscaled KL loss", kl_loss_term, step + i)
+            scaled_kl_loss = kl_loss_term * user_args.kl_coefficient
+            writer.add_scalar("Scaled KL loss", scaled_kl_loss, step + i)
+            # TODO Am I supposed to only backprop through cross_entropy_loss and not through scaled_kl_loss?
+            loss = cross_entropy_loss * (normalized_reward + scaled_kl_loss)
             loss.backward()
         optimizer.step()
         step += rloo_group
