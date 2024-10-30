@@ -113,6 +113,11 @@ def main(user_args: Namespace):
             writer.add_scalar("Cross entropy loss", cross_entropy_loss, step + i)
             normalized_reward = this_reward - mean_other_rewards
             writer.add_scalar("Normalized reward", normalized_reward, step + i)
+            # If the normalized reward is positive,
+            # which is what we want to reinforce,
+            # then the effect of loss.backward + optimizer.step
+            # is to minimize the cross entropy loss, i.e. increase the probability
+            # of this text generation
             loss = cross_entropy_loss * normalized_reward
             loss.backward()
         optimizer.step()
