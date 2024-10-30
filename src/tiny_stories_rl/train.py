@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import time
 import torch
 import copy
 from beartype import beartype
@@ -48,7 +49,7 @@ def setup(cuda: bool) -> tuple[GPTNeoForCausalLM, GPT2TokenizerFast]:
 
 @beartype
 def main(user_args: Namespace):
-    output_dir = f"/results/{generate_slug()}"
+    output_dir = f"/results/{time.strftime('%Y%m%d-%H%M%S')}{generate_slug()}"
     print(f"Writing to {output_dir}")
     writer = SummaryWriter(output_dir)
     llm, tokenizer = setup(True)
