@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-from tiny_stories_rl.train import get_reward
 import torch
 from transformers import (
     AutoModelForCausalLM,
-    AutoTokenizer,
-    GenerationConfig,
-    GPT2TokenizerFast,
-    GPTNeoForCausalLM,
 )
+
+from tiny_stories_rl.train import get_reward
 
 
 def test_reward():

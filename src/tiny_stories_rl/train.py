@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-import time
-import torch
 import copy
-from beartype import beartype
+import time
 from argparse import ArgumentParser, Namespace
-from torch.optim import SGD
-from torch.utils.tensorboard import SummaryWriter
+
+import torch
+from beartype import beartype
 from coolname import generate_slug
 from jaxtyping import Int, jaxtyped
+from torch.optim import SGD
+from torch.utils.tensorboard import SummaryWriter
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
