@@ -91,6 +91,12 @@ def main(user_args: Namespace):
                     input_ids=output_tokens, labels=output_tokens
                 ).loss
 
+            writer.add_scalar(
+                "Modifed LM's cross entropy loss", modified_llm_loss, step + i
+            )
+            writer.add_scalar(
+                "Unmodifed LM's cross entropy loss", unmodified_llm_loss, step + i
+            )
             # There should be a penalty (kl_loss_term<0) if
             # the unmodified LLM thinks the sequence is much less likely than
             # the modified LLM thinks, since then the modified LLM has strayed.
