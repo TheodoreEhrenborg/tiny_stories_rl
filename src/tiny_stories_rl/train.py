@@ -76,11 +76,32 @@ def main(user_args: Namespace):
         for i in range(rloo_group):
             output_tokens = generate(llm, input_tokens)
             output_text = tokenizer.decode(output_tokens[0])
-            reward = get_reward(output_text)
-            writer.add_scalar("Reward", reward, step + i)
+            raw_reward = get_raw_reward(output_text)
+            writer.add_scalar("Raw reward", raw_reward, step + i)
             writer.add_text("Generation", output_text, step + i)
             print(output_text)
-            print(f"has reward {reward}")
+            print(f"has raw reward {raw_reward}")
+
+            with torch.no_grad():
+                modified_llm_loss = llm(
+                    input_ids=output_tokens, labels=output_tokens
+                ).loss
+                unmodified_llm_loss = unmodified_llm(
+                    input_ids=output_tokens, labels=output_tokens
+                ).loss
+
+            # There should be a penalty (kl_loss_term<0) if
+            # the unmodified LLM thinks the sequence is much less likely than
+            # the modified LLM thinks, since then the modified LLM has strayed.
+            # That happens when the unmodified LLM has a high cross entropy loss.
+            kl_penalty_term = modified_llm_loss - unmodified_llm_loss
+            writer.add_scalar("Unscaled KL penalty", kl_penalty_term, step + i)
+            scaled_kl_penalty = kl_penalty_term * user_args.kl_coefficient
+            writer.add_scalar("Scaled KL penalty", scaled_kl_penalty, step + i)
+
+            reward = float(raw_reward + scaled_kl_penalty)
+            writer.add_scalar("Reward", reward, step + i)
+
             sequences.append(output_tokens)
             rewards.append(reward)
         for i in range(rloo_group):
@@ -88,21 +109,11 @@ def main(user_args: Namespace):
             this_reward = other_rewards.pop(i)
             mean_other_rewards = sum(other_rewards) / len(other_rewards)
             these_tokens = sequences[i]
-            llm_output = llm(input_ids=these_tokens, labels=these_tokens)
-            cross_entropy_loss = llm_output.loss
+            cross_entropy_loss = llm(input_ids=these_tokens, labels=these_tokens).loss
             writer.add_scalar("Cross entropy loss", cross_entropy_loss, step + i)
             normalized_reward = this_reward - mean_other_rewards
             writer.add_scalar("Normalized reward", normalized_reward, step + i)
-            with torch.no_grad():
-                unmodified_llm_pi = unmodified_llm(
-                    input_ids=these_tokens, labels=these_tokens
-                ).loss
-            kl_loss_term = unmodified_llm_pi - cross_entropy_loss
-            writer.add_scalar("Unscaled KL loss", kl_loss_term, step + i)
-            scaled_kl_loss = kl_loss_term * user_args.kl_coefficient
-            writer.add_scalar("Scaled KL loss", scaled_kl_loss, step + i)
-            # TODO Am I supposed to only backprop through cross_entropy_loss and not through scaled_kl_loss?
-            loss = cross_entropy_loss * (normalized_reward + scaled_kl_loss)
+            loss = cross_entropy_loss * normalized_reward
             loss.backward()
         optimizer.step()
         step += rloo_group
@@ -110,7 +121,7 @@ def main(user_args: Namespace):
 
 
 @beartype
-def get_reward(text: str) -> int:
+def get_raw_reward(text: str) -> int:
     words = text.split()
     return sum(
         1
