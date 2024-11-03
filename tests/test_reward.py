@@ -4,21 +4,21 @@ from transformers import (
     AutoModelForCausalLM,
 )
 
-from tiny_stories_rl.train import get_reward
+from tiny_stories_rl.train import get_raw_reward
 
 
 def test_reward():
-    assert get_reward("") == 0
-    assert get_reward("cow") == 0
-    assert get_reward("cow cat") == 1
-    assert get_reward("dog horse") == 0
-    assert get_reward("duck goose duck") == 0
-    assert get_reward("duck duck goose") == 1
-    assert get_reward("goose duck duck goose") == 1
-    assert get_reward("goose goose duck duck") == 2
-    assert get_reward("goose gopher giraffe duck") == 2
-    assert get_reward("goose gopher giraffe gorilla") == 3
-    assert get_reward("Goose gopher Giraffe gorilla") == 3
+    assert get_raw_reward("") == 0
+    assert get_raw_reward("cow") == 0
+    assert get_raw_reward("cow cat") == 1
+    assert get_raw_reward("dog horse") == 0
+    assert get_raw_reward("duck goose duck") == 0
+    assert get_raw_reward("duck duck goose") == 1
+    assert get_raw_reward("goose duck duck goose") == 1
+    assert get_raw_reward("goose goose duck duck") == 2
+    assert get_raw_reward("goose gopher giraffe duck") == 2
+    assert get_raw_reward("goose gopher giraffe gorilla") == 3
+    assert get_raw_reward("Goose gopher Giraffe gorilla") == 3
 
 
 def test_dim():
