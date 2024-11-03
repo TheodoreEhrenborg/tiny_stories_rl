@@ -1,6 +1,6 @@
 # REINFORCE vs RLOO
 
-```note
+```admonish
 For this chapter only, I'll be using a simpler
 reward function: The reward is the number of words
 in the generation that start with "A" or "a".
@@ -44,7 +44,7 @@ This is the REINFORCE algorithm.
 (The [REINFORCE paper](https://link.springer.com/article/10.1007/BF00992696) 
 has variants on this algorithm, so I'm simplifying.)
 
-```note
+```admonish
 For convenience we use the cross-entropy loss to 
 represent the model's probability of seeing a text. 
 Hence we have to be careful with the sign---if we want to 
@@ -55,7 +55,7 @@ to increase
 
 ```
 
-```note
+```admonish
 PyTorch doesn't have the best support for 
 directly adding gradients to a model's weights 
 (although it can be done with some hacks).
@@ -64,11 +64,79 @@ which has the same effect of adding a gradient to all model weights.
 ```
 
 
+Let's apply this algorithm on two identical trains (except for seed):
+
+TODO Reward graph
+
+
+<!-- 
+prehistoric-lurking-tanuki-of-holiness
+voracious-glaring-loon-of-joviality
+-->
+
+
+One of the models finds a high reward story, and 
+after step TODO, predicts it every step:
+
+
+> Once upon a time in a big nation with a little a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a
+
+
+
+
+
+The other train fixates on a different story, except
+this one has much lower reward:
+
+> Once upon a time, a big and the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the
+
+What went wrong?
 
 ## The RLOO algorithm
+
+The problem is that the model gets stuck in a local optimum.
+If the model happens to generate the same text sequence multiple times,
+then REINFORCE will keep making that text sequence more likely, so the model
+will keep generating it. Hence the model will inevitably fixate on one particular
+text. And this text doesn't have to be a high reward text, as seen above.
+
+
+The solution is to normalize the reward, using recent rewards as a baseline. 
+If the model generates a text sequence whose reward is higher than 
+those of recent generations, that text sequence should get positive reward after
+normalization. We want the model to move in this direction. Conversely, if a 
+text sequence has a reward that's lower than recent generations' rewards, 
+the normalized reward should be negative, even if the raw reward is still high.
+We want to decrease the probability that the model predicts worse-than-normal
+sequences.
+
+This technique is known as REINFORCE-Leave-One-Out (RLOO---see TODO et al for more).
+
+TODO Graph
+
+RLOO can take longer to find a high reward.
+The x-axis is number of text generations, and RLOO has to generate multiple texts
+(in my case 10) to get an estimate of recent rewards. 
+Hence it only takes 1 optimizer
+step per 10 generations.
+
+But RLOO avoids getting stuck on a low-reward sequence, and its final reward is higher.
+This is because RLOO is "never satisfied". If it gets mostly reward 92 but occasionally a reward of 93, RLOO will push the model weights towards reward 93 even though reward 92 is already very good (maximum possible is 97).
+
+# Scratch
+
+with a high reward if it can find a way to increase 
+(maximum possible is 97)
+
+"never satisfied"
+
+with high reward, but worse than recent 
+
 
 "play a video game"
 "the final score"
 
 
 "generate text autoregressively"
+
+where the reward function 
