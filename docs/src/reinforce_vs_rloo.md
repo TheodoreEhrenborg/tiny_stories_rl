@@ -123,20 +123,3 @@ step per 10 generations.
 But RLOO avoids getting stuck on a low-reward sequence, and its final reward is higher.
 This is because RLOO is "never satisfied". If it gets mostly reward 92 but occasionally a reward of 93, RLOO will push the model weights towards reward 93 even though reward 92 is already very good (maximum possible is 97).
 
-# Scratch
-
-with a high reward if it can find a way to increase 
-(maximum possible is 97)
-
-"never satisfied"
-
-with high reward, but worse than recent 
-
-
-"play a video game"
-"the final score"
-
-
-"generate text autoregressively"
-
-where the reward function 
