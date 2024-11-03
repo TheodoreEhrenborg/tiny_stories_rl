@@ -66,8 +66,10 @@ which has the same effect of adding a gradient to all model weights.
 
 Let's apply this algorithm on two identical trains (except for seed):
 
-TODO Reward graph
-
+<figure>
+  <img src=assets/reinforce.png alt=""/>
+  <figcaption>The x-axis is number of steps</figcaption>
+</figure>
 
 <!-- 
 prehistoric-lurking-tanuki-of-holiness
@@ -75,8 +77,8 @@ voracious-glaring-loon-of-joviality
 -->
 
 
-One of the models finds a high reward story, and 
-after step TODO, predicts it every step:
+One of the models (pink) finds a high reward story, and 
+after step 462, predicts it every step:
 
 
 > Once upon a time in a big nation with a little a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a
@@ -110,7 +112,7 @@ the normalized reward should be negative, even if the raw reward is still high.
 We want to decrease the probability that the model predicts worse-than-normal
 sequences.
 
-This technique is known as REINFORCE-Leave-One-Out (RLOO---see TODO et al for more).
+This technique is known as REINFORCE-Leave-One-Out (RLOO---see [Ahmadian et al.](http://arxiv.org/abs/2402.14740) for more).
 
 Here's a plot of the reward over time 
 of two RLOO runs (green) versus the REINFORCE runs above:
