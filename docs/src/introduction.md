@@ -43,3 +43,7 @@ because of the intermediate "the", and
 "seven cycling psychologists" doesn't count 
 even though the initial sound is the same.
 ```
+
+```admonish
+I always prompt the model with "Once upon a time".
+```
