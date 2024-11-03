@@ -36,14 +36,26 @@ and
 `towards the tall tree`.
 
 ```admonish
+I always prompt the model with "Once upon a time".
+```
+
+## Note on definitions
+
 For simplicity, I'm defining alliteration 
 as two or more consecutive words with the same
 initial letter. So "Zebadiah the Zebra" doesn't count
 because of the intermediate "the", and
 "seven cycling psychologists" doesn't count 
 even though the initial sound is the same.
+
+The exact reward function is 
+```python
+def get_raw_reward(text: str) -> int:
+    words = text.split()
+    return sum(
+        1
+        for word, next_word in zip(words, words[1:])
+        if word[0].lower() == next_word[0].lower()
+    )
 ```
 
-```admonish
-I always prompt the model with "Once upon a time".
-```
