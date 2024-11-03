@@ -112,7 +112,11 @@ sequences.
 
 This technique is known as REINFORCE-Leave-One-Out (RLOO---see TODO et al for more).
 
+Here's a plot of the reward over time 
+of two RLOO runs (green) versus the REINFORCE runs above:
+
 TODO Graph
+
 
 RLOO can take longer to find a high reward.
 The x-axis is number of text generations, and RLOO has to generate multiple texts
@@ -123,3 +127,12 @@ step per 10 generations.
 But RLOO avoids getting stuck on a low-reward sequence, and its final reward is higher.
 This is because RLOO is "never satisfied". If it gets mostly reward 92 but occasionally a reward of 93, RLOO will push the model weights towards reward 93 even though reward 92 is already very good (maximum possible is 97).
 
+<!-- 
+slim-misty-mastodon-of-trust
+lumpy-mahogany-leopard-of-warranty
+-->
+
+
+Thus the second RLOO run finds this sequence with the highest possible reward:
+
+> Once upon a time a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and a and
