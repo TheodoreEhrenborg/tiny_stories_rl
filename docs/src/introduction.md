@@ -8,7 +8,7 @@ Code [here](https://github.com/TheodoreEhrenborg/tiny_stories_rl)
 
 ## Demo
 
-Here's a generation from the unmodified model:
+Here's a non-cherry-picked generation from the unmodified model:
 
 <!-- step 4: This is the first one from gorgeous-cream-jackal -->
 
@@ -25,6 +25,9 @@ Here's a generation from the model after reinforcement learning:
 <!-- step 5,079 --- this is the first one from busy-flawless-markhor after step 5000 -->
 
 > Once upon a time, there was a tall tree. The tall tree was in the middle of a park. One day, a little girl wanted to touch the tall tree. She started to walk towards the tall tree. When she got to the tall tree, she started to touch the branches. Suddenly, the tree started to grow taller and taller! The little girl was amazed and she ran away from the tall tree. She kept running and she forgot about the tall tree. She
+
+(Here I chose the first generation after step 5000, 
+so this is a little cherry-picked.)
 
 Now there's much more alliteration, such as 
 `to touch the tall tree`,
