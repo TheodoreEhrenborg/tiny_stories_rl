@@ -115,9 +115,12 @@ sequences.
 This technique is known as REINFORCE-Leave-One-Out (RLOO---see [Ahmadian et al.](http://arxiv.org/abs/2402.14740) for more).
 
 Here's a plot of the reward over time 
-of two RLOO runs (green) versus the REINFORCE runs above:
+of two RLOO runs (both green) versus the REINFORCE runs above:
 
-TODO Graph
+<figure>
+  <img src=assets/reinforce_rloo.png alt=""/>
+  <figcaption>The x-axis is number of steps</figcaption>
+</figure>
 
 
 RLOO can take longer to find a high reward.
