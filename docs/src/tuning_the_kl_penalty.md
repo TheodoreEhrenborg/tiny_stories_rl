@@ -95,7 +95,98 @@ Hence the optimal value of `beta` is somewhere between 10 and 100.
 
 ## Second sweep
 
+<!-- 
 
+20241031-223222curvy-light-honeybee-of-bloom
+
+
+20241031-233847transparent-dexterous-foxhound-of-weather
+
+
+20241101-004615gorgeous-cream-jackal-of-whirlwind
+
+
+20241101-015253outgoing-almond-pig-of-correction
+
+
+20241101-025936mellow-positive-cougar-of-prosperity
+
+
+20241101-040601defiant-eccentric-lyrebird-of-popularity
+
+
+20241101-051244poised-mantis-of-unusual-hail
+
+
+20241101-061920accurate-bullfrog-of-unexpected-jest
+
+-->
+
+We'll sweep over these values:
+
+- `beta=20` (red)
+- `beta=30` (orange)
+- `beta=40` (yellow)
+- `beta=50` (lighter green)
+- `beta=60` (darker green)
+- `beta=70` (sky blue)
+- `beta=80` (darker blue)
+- `beta=90` (violet)
+
+Plot of raw reward:
+
+<figure>
+  <img src=assets/sweep2_raw_reward.png alt=""/>
+  <figcaption>The x-axis is number of steps</figcaption>
+</figure>
+
+That's a crowded graph. The key feature is that 
+`beta=20` and `beta=30` both seem too weak---gradient
+descent is able to optimize alliteration at the expense of 
+coherence. 
+(The last text from `beta=20` train starts "Once upon a time there was a bird who was walking through the tall trees to get to the tall trees to the tall trees to the tall trees", and goes on like this.)
+
+But when `beta` is at least 40, the KL penalty term keeps the raw reward low. 
+Let's extend the `beta=40` train 
+see how much
+the amount of alliteration
+will increase.
+
+  
+<!-- 
+  
+20241101-225949busy-flawless-markhor-of-gallantry
+
+-->
+
+
+<figure>
+  <img src=assets/extended_sweep2_raw_reward.png alt=""/>
+  <figcaption>The x-axis is number of steps</figcaption>
+</figure>
+
+By step 7000, 
+this train has 
+TODO Example of sequence where it's stuck
+
+
+TODO 3 example sequences
+after step 5000
+
+excluding the one I had here TODO link to intro
+
+
+
+
+
+Preferably I'd like raw reward <- TODO Remove
+
+
+Q: Why is it phrases like "tall trees" TODO
+
+s and t are easiest 
+
+zany zucchini wouldn't appear in normal text generations, so no opportunity for it to get amplified
 
 [^note]: Technically these are the last two text generations displayed
 by TensorBoard, which hides some data points because of its reservoir sampling.
