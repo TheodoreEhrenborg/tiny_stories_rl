@@ -10,6 +10,8 @@ defined [here](introduction.md#note-on-definitions).
 
 We could just train a model as-is. If we do, the reward looks great:
 
+<!-- soft-crafty-quetzal-of-tolerance -->
+
 <figure>
   <img src=assets/no_kl_penalty.png alt=""/>
   <figcaption>The x-axis is number of steps</figcaption>
