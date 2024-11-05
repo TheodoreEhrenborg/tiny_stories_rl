@@ -1,7 +1,7 @@
 # Introduction
 
 This project uses reinforcement learning to encourage
-the language model `roneneldan/TinyStories-33M` 
+the language model `roneneldan/TinyStories-33M`
 to generate stories with alliteration.
 
 Code [here](https://github.com/TheodoreEhrenborg/tiny_stories_rl)
@@ -15,7 +15,7 @@ Here's a non-cherry-picked generation from the unmodified model:
 > Once upon a time there was a cute little bunny named Fluff. Fluff was a very clever bunny who liked to explore and find new places every day. One day while Fluff was hopping around, he noticed a big knot in a tree. He wanted to attach the knot to something, so he used his paws to attach it. Fluff hopped up to the nearest rabbit and said, "Hello, can you help me attach this knot to the tree?" The
 
 By coincidence, there are some consecutive words with the same initial letter,
-such as 
+such as
 `Fluff. Fluff`
 and
 `to the tree?" The`.
@@ -26,10 +26,10 @@ Here's a generation from the model after reinforcement learning:
 
 > Once upon a time, there was a tall tree. The tall tree was in the middle of a park. One day, a little girl wanted to touch the tall tree. She started to walk towards the tall tree. When she got to the tall tree, she started to touch the branches. Suddenly, the tree started to grow taller and taller! The little girl was amazed and she ran away from the tall tree. She kept running and she forgot about the tall tree. She
 
-(Here I chose the first generation after step 5000, 
+(Here I chose the first generation after step 5000,
 so this is a little cherry-picked.)
 
-Now there's much more alliteration, such as 
+Now there's much more alliteration, such as
 `to touch the tall tree`,
 `She started`,
 and
@@ -41,14 +41,15 @@ I always prompt the model with "Once upon a time".
 
 ## Note on definitions
 
-For simplicity, I'm defining alliteration 
+For simplicity, I'm defining alliteration
 as two or more consecutive words with the same
 initial letter. So "Zebadiah the Zebra" doesn't count
 because of the intermediate "the", and
-"seven cycling psychologists" doesn't count 
+"seven cycling psychologists" doesn't count
 even though the initial sound is the same.
 
-The exact reward function is 
+The exact reward function is
+
 ```python
 def get_raw_reward(text: str) -> int:
     words = text.split()
@@ -58,4 +59,3 @@ def get_raw_reward(text: str) -> int:
         if word[0].lower() == next_word[0].lower()
     )
 ```
-
