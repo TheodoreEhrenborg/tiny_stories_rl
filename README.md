@@ -1,16 +1,16 @@
 # tiny_stories_rl
 
-Work in progress
+Uses reinforcement learning
+to encourage `roneneldan/TinyStories-33M`
+to generate stories with alliteration
 
 
-Reinforcement learning
-
-Docs 
+Docs are [here](https://rl.ehrenborg.dev)
 ## Installtion 
 
 If you install 
 [uv](https://docs.astral.sh/uv/getting-started/installation/),
-it'll handle getting the dependencies.
+it'll get the dependencies.
 
 Backup plan: `./build.sh` and `./run.sh` will build and run a Docker container
 that has `uv`, in case your system is weird (like my NixOS laptop) 
@@ -24,8 +24,10 @@ you can run the commands in the following sections.
 uv run src/tiny_stories_rl/train.py
 ```
 
+The KL penalty coeffient is configurable via `--kl-coefficient`;
+see [here](https://rl.ehrenborg.dev/what_is_the_kl_penalty.html) for more.
 
-## Tests
+## Running tests
 
 ``` bash
 uv run pytest tests
