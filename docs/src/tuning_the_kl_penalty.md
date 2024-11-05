@@ -188,6 +188,8 @@ s and t are easiest
 
 zany zucchini wouldn't appear in normal text generations, so no opportunity for it to get amplified
 
+have to change the reward function
+
 [^note]: Technically these are the last two text generations displayed
 by TensorBoard, which hides some data points because of its reservoir sampling.
 
