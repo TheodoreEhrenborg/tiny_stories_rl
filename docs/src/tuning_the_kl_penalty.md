@@ -188,22 +188,13 @@ after step 5000 (the first story is the one from the [introduction](introduction
 > Once upon a time there was a tall tree. The tree was so tall that it could touch the clouds. One day, it was raining so the tall tree began to shake. All the animals in the forest were scared of the thunderous sound and the tall tree. Then something amazing happened. Some people walked to the tall tree and saw how tall it was. They decided to build a tall tower of blocks to the top of the tall tree. The tower was made of the tall
 
 Q: I accept that this model has alliteration ("she saw something shiny"), and its stories are coherent and varied. But why does it only talk about trees?<br>
-A: My guess is 
+A: My guess is that the unmodified language model is reasonably likely to generate "tall tree".
+Then RLOO amplifies that trend. But a phrase like "zany zucchini" is far less likely to occur by
+chance in the original model's outputs, so RLOO can't push the weights in that direction because it never 
+has the chance. Generally the model only does alliteration with the letters s and t.<br>
+Q: How would you make the model do alliteration with other letters?<br>
+A: Probably this would require changing the reward function to give more reward if there's alliteration with rare letters. The KL penalty alone can't fix this, since the original LM will think that "tall tree" is more likely than "zany zucchini", so the KL penalty wouldn't favor the latter.
 
-of all the letters, 
-
-that alliteration with the letters S and T is the most like
-"she saw"
-"tall tree"
-Q: How would you fix that?
-
-Q: Why is it phrases like "tall trees" TODO
-
-s and t are easiest 
-
-zany zucchini wouldn't appear in normal text generations, so no opportunity for it to get amplified
-
-have to change the reward function
 
 [^note]: Technically these are the last two text generations displayed
 by TensorBoard, which hides some data points because of its reservoir sampling.
