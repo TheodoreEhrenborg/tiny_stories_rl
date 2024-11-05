@@ -148,7 +148,7 @@ coherence.
 
 But when `beta` is at least 40, the KL penalty term keeps the raw reward low. 
 Let's extend the `beta=40` train 
-see how much
+to see how much
 the amount of alliteration
 will increase.
 
@@ -167,20 +167,35 @@ will increase.
 
 By step 7000, 
 this train has 
-TODO Example of sequence where it's stuck
+also converged on texts with high alliteration 
+and low variety. 
+The first text after step 7000 is 
+> Once upon a time there was a tall tree. The tall tree wanted to touch the tall tree. The tall tree wanted to touch the tall tree to touch the tall tree. The tall tree wanted to touch the tall tree to touch the tall tree to touch the tall tree to touch the tall tree. The tall tree wanted to touch the tall tree to touch the tall tree to touch the tall tree to touch the tall tree to touch the tall tree to touch the tall tree to touch the tall tree to
+
+All following texts are almost identical to that one.
 
 
-TODO 3 example sequences
-after step 5000
+But the graph suggests that at step 5000, the model was still
+generating a variety of stories. Here are the first through fourth stories
+after step 5000 (the first story is the one from the [introduction](introduction.md#demo)):
 
-excluding the one I had here TODO link to intro
+> Once upon a time, there was a tall tree. The tall tree was in the middle of a park. One day, a little girl wanted to touch the tall tree. She started to walk towards the tall tree. When she got to the tall tree, she started to touch the branches. Suddenly, the tree started to grow taller and taller! The little girl was amazed and she ran away from the tall tree. She kept running and she forgot about the tall tree. She
 
+> Once upon a time, there was a little girl. She was walking in the woods when she saw a tall tree. She walked over to the tree and saw a big hole. She stepped inside the tree to take a better look and she saw something shiny! The girl carefully stepped out of the tree. When she got nearer to the top, she saw something strange. She saw an image in the tree trunk. The image was so close that she touched it! The girl was
 
+> Once upon a time, there was a little girl. She felt sad. She walked to the top of the tree but she didn't know what to do. So she started to cry. A big, strong tree heard her cry. So the big tree tried to help. The big tree grew very tall and strong. Then the big tree used its power to make the little girl feel happy again. The little girl thanked the strong tree for her help. Since then she never stops 
 
+> Once upon a time there was a tall tree. The tree was so tall that it could touch the clouds. One day, it was raining so the tall tree began to shake. All the animals in the forest were scared of the thunderous sound and the tall tree. Then something amazing happened. Some people walked to the tall tree and saw how tall it was. They decided to build a tall tower of blocks to the top of the tall tree. The tower was made of the tall
 
+Q: I accept that this model has alliteration ("she saw something shiny"), and its stories are coherent and varied. But why does it only talk about trees?<br>
+A: My guess is 
 
-Preferably I'd like raw reward <- TODO Remove
+of all the letters, 
 
+that alliteration with the letters S and T is the most like
+"she saw"
+"tall tree"
+Q: How would you fix that?
 
 Q: Why is it phrases like "tall trees" TODO
 
