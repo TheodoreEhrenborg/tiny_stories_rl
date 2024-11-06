@@ -17,20 +17,20 @@ We could just train a model as-is. If we do, the reward looks great:
   <figcaption>The x-axis is number of steps</figcaption>
 </figure>
 
-But if we look at the text generations at the end of training, they are always the same 100 words:
+But if we look at the text generations near the end of training, the model always predicts the same 100 words:
 
 > Once upon a time to the tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall
 
 Gradient descent has singlemindedly pushed the model weights
 toward maxmizing the reward function, and we've lost important
-qualities like
+qualities like:
 
 - The model should generate a variety of texts, not the same one every time
 - The text should be a story with acceptable grammar and coherence, not just unrelated words
 
 ## Definition of the KL penalty
 
-KL stands for Kullback–Leibler, as in [Kullback–Leibler divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence).
+KL stands for Kullback–Leibler, as in [Kullback--Leibler divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence).
 The KL divergence can be interpreted as a difference in
 cross-entropies, and we'll use that form for the penalty:
 
