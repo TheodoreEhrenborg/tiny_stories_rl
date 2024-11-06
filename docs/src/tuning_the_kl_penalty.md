@@ -54,9 +54,7 @@ The KL penalty (before multiplying by `beta`):
 Again, this makes sense: When the penalty coefficient `beta` is small,
 gradient descent doesn't optimize for the KL penalty.
 
-last generation for each
-
-Let's look at the last two text generations\[^note\] for each train:
+Let's look at the last two text generations[^note] for each train:
 
 - `beta=0`
   - Last: "Once upon a time to the tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall tall"
@@ -141,7 +139,9 @@ That's a crowded graph. The key feature is that
 `beta=20` and `beta=30` both seem too weak---gradient
 descent is able to optimize alliteration at the expense of
 coherence.
-(The last text from `beta=20` train starts "Once upon a time there was a bird who was walking through the tall trees to get to the tall trees to the tall trees to the tall trees", and goes on like this.)
+(The last text from the `beta=20` train starts 
+"Once upon a time there was a bird who was walking through the tall trees to get to the tall trees to the tall trees to the tall trees", 
+and goes on like this.)
 
 But when `beta` is at least 40, the KL penalty term keeps the raw reward low.
 Let's extend the `beta=40` train
@@ -183,12 +183,23 @@ after step 5000 (the first story is the one from the [introduction](introduction
 > Once upon a time there was a tall tree. The tree was so tall that it could touch the clouds. One day, it was raining so the tall tree began to shake. All the animals in the forest were scared of the thunderous sound and the tall tree. Then something amazing happened. Some people walked to the tall tree and saw how tall it was. They decided to build a tall tower of blocks to the top of the tall tree. The tower was made of the tall
 
 Q: I accept that this model has alliteration ("she saw something shiny"), and its stories are coherent and varied. But why does it only talk about trees?<br>
-A: My guess is that the unmodified language model is reasonably likely to generate "tall tree".
+A: My guess is that the unmodified language model (LM) is reasonably likely to generate "tall tree".
 Then RLOO amplifies that trend. But a phrase like "zany zucchini" is far less likely to occur by
-chance in the original model's outputs, so RLOO can't push the weights in that direction because it never
-has the chance. Generally the model only does alliteration with the letters s and t.<br>
-Q: How would you make the model do alliteration with other letters?<br>
+chance in the original model's outputs.
+So RLOO can't push the weights in that direction because it never
+has the chance. 
+
+Moreover, I speculate that the 
+TinyStories LM doesn't understand what alliteration is, 
+so it finds sentences with high reward by trial and error.
+But LLMs do know what alliteration is, so I speculate that enough
+RL would trigger an LLM's "alliteration neuron", and then it would 
+start generating alliterative text that wasn't in the RL training data so far.
+
+
+
+Q: How would you make this model do alliteration with other letters besides s and t?<br>
 A: Probably this would require changing the reward function to give more reward if there's alliteration with rare letters. The KL penalty alone can't fix this, since the original LM will think that "tall tree" is more likely than "zany zucchini", so the KL penalty wouldn't favor the latter.
 
-\[^note\]: Technically these are the last two text generations displayed
+[^note]: Technically these are the last two text generations displayed
 by TensorBoard, which hides some data points because of its reservoir sampling.
