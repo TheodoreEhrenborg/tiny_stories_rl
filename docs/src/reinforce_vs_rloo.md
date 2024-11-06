@@ -3,7 +3,7 @@
 ```admonish
 For this chapter only, I'll be using a simpler
 reward function: The reward is the number of words
-in the generation that start with "A" or "a".
+that start with "A" or "a".
 ```
 
 ## How is reinforcement learning different from supervised learning?
@@ -30,17 +30,19 @@ reward is "how many words started with A or a?"
 If the model produces a story with a high reward, we want
 to nudge the model to generate stories more like that one.
 
-A simple way is to feed the generated text to the model
-to get the model's probability of seeing the text in the wild.
-Then we use backpropagation to get the gradient of that
-probability with respect to the model weights.
-If we add `gradient` to the weights, we'll
-the model more likely to generate this text sequence,
-and in theory also more likely to generate similar text sequences.
-We want to nudge the model more if the reward was higher (and vice versa),
-so instead we add `reward * gradient` to the weights.
-This is the REINFORCE algorithm.
+Procedure:
 
+1. Feed the generated text to the model
+   to get a probability, i.e. how likely the model thinks the text is
+1. Use backpropagation to get the `gradient` of that
+   probability with respect to the model weights.
+1. If we add `gradient` to the weights, we'll
+   make the model more likely to generate this text sequence,
+   and in theory also more likely to generate similar text sequences.
+1. We want to nudge the model more if the reward was higher (and vice versa),
+   so instead we add `reward * gradient` to the weights.
+
+This is the REINFORCE algorithm.
 (The [REINFORCE paper](https://link.springer.com/article/10.1007/BF00992696)
 has variants on this algorithm, so I'm simplifying.)
 
@@ -48,11 +50,9 @@ has variants on this algorithm, so I'm simplifying.)
 For convenience we use the cross-entropy loss to 
 represent the model's probability of seeing a text. 
 Hence we have to be careful with the sign---if we want to 
-increase the probability of a text sequence, 
+_increase_ the probability of a text sequence, 
 we should add the gradient with the right sign so that 
-the cross-entropy loss decreases.
-to increase
-
+the cross-entropy loss _decreases_.
 ```
 
 ```admonish
@@ -63,7 +63,7 @@ It's easier to instead use `torch.optim.SGD` as a middleman,
 which has the same effect of adding a gradient to all model weights. 
 ```
 
-Let's apply this algorithm on two identical trains (except for seed):
+Let's apply the REINFORCE algorithm on two identical trains (except for seed):
 
 <figure>
   <img src=assets/reinforce.png alt=""/>
@@ -75,8 +75,8 @@ prehistoric-lurking-tanuki-of-holiness
 voracious-glaring-loon-of-joviality
 -->
 
-One of the models (pink) finds a high reward story, and
-after step 462, predicts it every step:
+One of the models (pink) finds a high reward text.
+After step 462 the model predicts that text at every step:
 
 > Once upon a time in a big nation with a little a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a
 
@@ -85,7 +85,7 @@ this one has much lower reward:
 
 > Once upon a time, a big and the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the the
 
-What went wrong?
+What went wrong with the second train?
 
 ## The RLOO algorithm
 
@@ -98,7 +98,9 @@ text. And this text doesn't have to be a high reward text, as seen above.
 The solution is to normalize the reward, using recent rewards as a baseline.
 If the model generates a text sequence whose reward is higher than
 those of recent generations, that text sequence should get positive reward after
-normalization. We want the model to move in this direction. Conversely, if a
+normalization. We want the model to move in this direction. 
+
+Conversely, if a
 text sequence has a reward that's lower than recent generations' rewards,
 the normalized reward should be negative, even if the raw reward is still high.
 We want to decrease the probability that the model predicts worse-than-normal
@@ -107,18 +109,19 @@ sequences.
 This technique is known as REINFORCE-Leave-One-Out (RLOO---see [Ahmadian et al.](http://arxiv.org/abs/2402.14740) for more).
 
 Here's a plot of the reward over time
-of two RLOO runs (both green) versus the REINFORCE runs above:
+of two RLOO runs (both green), versus the REINFORCE runs above:
 
 <figure>
   <img src=assets/reinforce_rloo.png alt=""/>
   <figcaption>The x-axis is number of steps</figcaption>
 </figure>
 
-RLOO can take longer to find a high reward.
-The x-axis is number of text generations, and RLOO has to generate multiple texts
+RLOO can take longer to find a high reward,
+since it has to generate multiple texts
 (in my case 10) to get an estimate of recent rewards.
 Hence it only takes 1 optimizer
 step per 10 generations.
+The x-axis is the number of text generations (what TensorBoard sees as steps).
 
 But RLOO avoids getting stuck on a low-reward sequence, and its final reward is higher.
 This is because RLOO is "never satisfied". If it gets mostly reward 92 but occasionally a reward of 93, RLOO will push the model weights towards reward 93 even though reward 92 is already very good (maximum possible is 97).
