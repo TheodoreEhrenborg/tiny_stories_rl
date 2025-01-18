@@ -6,7 +6,7 @@ to generate stories with alliteration
 
 Docs are [here](https://rl.ehrenborg.dev)
 
-## Installtion
+## Installation
 
 If you install
 [uv](https://docs.astral.sh/uv/getting-started/installation/),
@@ -24,7 +24,7 @@ you can run the commands in the following sections.
 uv run src/tiny_stories_rl/train.py
 ```
 
-The KL penalty coeffient is configurable via `--kl-coefficient`;
+The KL penalty coefficient is configurable via `--kl-coefficient`;
 see [here](https://rl.ehrenborg.dev/what_is_the_kl_penalty.html) for more.
 
 ## Running tests
